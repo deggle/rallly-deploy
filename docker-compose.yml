@@ -27,7 +27,7 @@ services:
       rallly_db:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "4199:3000"
     environment:
       DATABASE_URL: postgres://postgres:postgres@rallly_db:5432/rallly
       SELF_HOSTED: "true"
