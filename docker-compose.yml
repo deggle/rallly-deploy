@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  rallly_db:
+    image: postgres:14.2
+    container_name: rallly_db
+    restart: always
+    #ports:
+    #  - "5450:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rallly
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - /srv/docker/rallly/data:/var/lib/postgresql/data
+
+  rallly:
+    image: lukevella/rallly:latest
+    container_name: rallly
+    restart: always
+    depends_on:
+      rallly_db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@rallly_db:5432/rallly
+      SELF_HOSTED: "true"
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rallly.rule=Host(`${APP_URL}`)"
+      - "traefik.http.routers.rallly.entrypoints=https"
+      - "traefik.http.routers.rallly.tls=true"
+
+networks:
+  default:
+    external: true
+    name: traefik_network
