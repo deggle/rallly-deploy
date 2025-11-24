@@ -1,6 +1,7 @@
 version: "3.9"
 
 services:
+
   rallly_db:
     image: postgres:14.2
     container_name: rallly_db
@@ -30,8 +31,6 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@rallly_db:5432/rallly
       SELF_HOSTED: "true"
-    env_file:
-      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rallly.rule=Host(`${APP_URL}`)"
